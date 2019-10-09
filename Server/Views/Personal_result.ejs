@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<!--송장번호 조회 페이지-->
+
+<head>
+    <% include Head %>
+</head>
+
+<body class="body">
+    <%include Banner %>
+    <!--상품 텍스트-->
+    <div class="blur div_big">
+        <div class="blur div_middle_left">
+            <!--상품정보-->
+            <div class="div_status">
+                <p>상품명: <%=content.ItemName%></p>
+                <p>송장번호: <%=content.InvoiceNum%></p>
+                <p>상태: <%=content.Status%></p>
+                <p>출발 주소: <%=content.StAddress%></p>
+                <p>도착 주소: <%=content.DstAddress%></p>
+            </div>
+            <!--타임라인-->
+            <div class="blur div_status">
+                <p>타임라인</p>
+                <table class="timeline">
+                    <% for(let data of timeline) {%>
+                    <tr>
+                        <td class="timeline"><%=data.WorkDate.substr(5, 5).replace('-', '월 ')%>일</td>
+                        <td class="timeline"><%=data.WorkTime.substr(0, 5)%></td>
+                        <td class="timeline timeline_name"><%=data.WorkName%></td>
+                    </tr>
+                    <% } %>
+                </table>
+            </div>
+        </div>
+        <!--지도 및 배송기사 관련 정보-->
+        <div class="blur div_middle_right_top">
+            <!--카카오맵 api-->
+            <div id="map"></div>
+            <script type="text/javascript"
+                src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c7cd35da5e88d1f13545a9b0e54b7152&libraries=services"></script>
+            <script>
+                var container = document.getElementById('map');
+                var options = {
+                    center: new kakao.maps.LatLng(33.450701, 126.570667),
+                    level: 3
+                };
+                var map = new kakao.maps.Map(container, options);
+                var geocoder = new kakao.maps.services.Geocoder();
+                geocoder.addressSearch('<%=content.Location%>', function (result, status) {
+                    console.log(status)
+                    if (status == kakao.maps.services.Status.OK) {
+                        //위경도 얻어오기
+                        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                        map.panTo(coords);
+                        var imageSrc='Images/truck.png',
+                        iamgeSize=new kakao.maps.Size(40, 40),
+                        imageOptions={offset:new kakao.maps.Point(20, 20)};
+                        var markerImage=new kakao.maps.MarkerImage(imageSrc, iamgeSize, imageOptions);
+
+                        var markerPosition=new kakao.maps.LatLng(result[0].y, result[0].x);
+                        var marker=new kakao.maps.Marker({
+                            position: markerPosition,
+                            image: markerImage
+                        });
+                        marker.setMap(map);
+                    }
+                });
+            </script>
+            <div class="div_status">
+                    <p>배송 업체: <%=content.CompanyName%></p>
+                    <p>배송 기사명: <%=content.DriverName%></p>
+                    <p>배송 기사 연락처: <%=content.DriverPhone%></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

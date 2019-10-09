@@ -1,0 +1,170 @@
+/*상단 배너*/
+.banner {
+    background-color: #62A94A;
+    width: 100%;
+    height: 60px;
+    margin: 0px;
+}
+/*링크 클릭 표시 안함*/
+a {
+    text-decoration: none;
+    color: white;
+}
+a:visited {
+    text-decoration: none;
+}
+
+/*일반적인 화면 배경*/
+
+.body {
+    background-image: url('../Images/web_background.png');
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-size: cover;
+    margin: 0px;
+}
+
+#app_icon {
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+}
+
+/*상단 메뉴 div*/
+
+#menu {
+    position: relative;
+    display: inline-blocks;
+    float: right;
+    top: 3px;
+    width: 50%;
+    min-width: 800px;
+    height: auto;
+    text-align: right;
+}
+
+/*상단 메뉴 버튼*/
+
+.menu_item {
+    position: relative;
+    top: 0;
+    display: inline-block;
+    color: white;
+    margin-right: 8%;
+    height: 40px;
+}
+
+/*현재화면 표시 hr*/
+
+/*배너 상단 밑줄 숨기기*/
+hr.hide {
+    visibility: hidden;
+}
+/*배너 상단 및줄 표시*/
+hr.current {
+    position: relative;
+    top: -15px;
+    visibility: visible;
+}
+
+/*투명 배경 div*/
+.blur {
+    position: absolute;
+    padding: 30px;
+    border-radius: 30pt;
+    background-color: rgba( 255, 255, 255, 0.6 );
+    text-align: center;
+    overflow: visible;
+}
+.div_left {
+    height: 350px;
+    width: 380px;
+    bottom: 7%;
+    left: 10%;
+}
+.div_right {
+    height: 350px;
+    width: 380px;
+    bottom: 7%;
+    right: 10%;
+}
+.div_center {
+    width: 400px;
+    height: 300px;
+    top: 50%;
+    margin-top: -150px;
+    left: 50%;
+    margin-left: -200px;
+}
+.div_big {
+    width: 90%;
+    height: 80%;
+    top: 10%;
+    left: 3%;
+}
+.div_middle_left{
+    height: 85%;
+    width: 37%;
+    top:3%;
+    left: 3%;  
+}
+.div_middle_right_top{
+    height: 70%;
+    width: 37%;
+    top:3%;
+    right: 3%;  
+}
+.div_status {
+    padding: 10px;
+    width: 80%;
+    text-align: left;
+}
+table.timeline {
+    width: 100%;
+    background: white;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+td.timeline {
+    border: 1px solid black;
+    text-align: center;
+    padding: 10px;
+}
+td.timeline_name {
+    text-align: left;
+    width: 60%;
+}
+ /*크게 보여질 이미지*/
+.box {
+    width: 180px;
+    height: 180px;
+}
+.label {
+    font-size: 12pt;
+}
+
+.default_input {
+    font-size: 12pt;
+}
+.go {
+    color: #62A94A;
+    
+}
+#need_login {
+    width: 100%;
+    background:white;
+    height: 30px;
+    line-height: 30px;
+    border: none;
+}
+p{
+    font-size: 14pt;
+}
+#map {
+    border-radius: 30pt;
+    width:100%;
+    height:350px;
+}
