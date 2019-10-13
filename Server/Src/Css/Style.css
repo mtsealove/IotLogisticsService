@@ -112,10 +112,17 @@ hr.current {
     left: 3%;  
 }
 .div_middle_right_top{
-    height: 70%;
+    height: 67%;
     width: 37%;
     top:3%;
     right: 3%;  
+}
+.div_small_right_bottom {
+    width: 37%;
+    height: 8%;
+    top:80%;
+    right: 3%;
+    text-align: left;
 }
 .div_status {
     padding: 10px;
@@ -130,7 +137,7 @@ table.timeline {
 }
 td.timeline {
     border: 1px solid black;
-    text-align: center;
+    text-align: f;
     padding: 10px;
 }
 td.timeline_name {
@@ -147,7 +154,13 @@ td.timeline_name {
 }
 
 .default_input {
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 25px;
     font-size: 12pt;
+}
+.width300{
+    width: 300px;
 }
 .go {
     color: #62A94A;
