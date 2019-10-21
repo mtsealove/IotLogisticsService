@@ -1,19 +1,62 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <% include Head %>
-    </head>
-    <body class="body">
-        <% include Banner %>
 
-        <div class="div_big blur">
-            <div class="blur div_middle_left">
+<head>
+    <% include Head %>
+    <script>
+        $(function () {
+            $("#driver_id").keydown(function (key) {
+                if (key.keyCode == 13) {
+                    check_input();
+                }
+            });
+            $("#submit_btn").click(function () {
+                check_input();
+            });
+        });
+        function check_input() {
+            console.log($("#driver_id").val());
+            if ($("#driver_id").val() == "") {
+                alert("기사 아이디를 입력하세요");
+                return;
+            } else {
+                $("#driver_form").submit();
+            }
+        }
+    </script>
+</head>
 
-            </div>
+<body class="body">
+    <% include Banner %>
 
-            <div class="blur div_middle_right_top">
+    <div class="div_big blur">
+        <!--좌측 기사 정보 및 화물 정보-->
+        <div class="blur div_middle_left">
+            <div class="div_status">
+                <h3>기사정보 조회</h3>
+                <form method="GET" id="driver_form" action="/Company">
+                    <input name="driver_id" type="text" id="driver_id">
+                    <input type="button" id="submit_btn" value="GO!">
+                </form>
+
+                <!--기사 정보가 있을 때만 표시-->
+                <% if(driver_info) { %>
+                <h3>기사정보</h3>
+                <p>배송 기사명: <%=driver_info.DriverName%></p>
+                <p>배송 기사 연락처: <%=driver_info.DriverPhone%></p>
+                <p>상태: <%=driver_info.action%></p>
+
+                <h3>운송 정보</h3>
                 
+                <% } %>
+
             </div>
         </div>
-    </body>
+
+        <div class="blur div_middle_right_top">
+
+        </div>
+    </div>
+</body>
+
 </html>

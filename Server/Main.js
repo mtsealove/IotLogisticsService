@@ -8,7 +8,7 @@ const InputCheck = require('./InputCheck');
 const session = require('express-session');
 
 app.use(body_parser.json());
-app.use(body_parser.urlencoded({ extended: true, limit:'150mb' }));
+app.use(body_parser.urlencoded({ extended: true, limit: '150mb' }));
 app.set('view engine', 'ejs');
 app.set('views', 'Views');
 app.use(express.static('Src'));
@@ -19,7 +19,7 @@ app.use(session({   //세션 설정
     resave: 'false',
     saveUninitialized: true,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 10  //로그인 유지 시간(10시간)
+        maxAge: 1000 * 60 * 60 * 10  //로그인 유지 시간(10시간)
     }
 }));
 
@@ -87,7 +87,23 @@ app.get('/Company', (req, res) => {
     //세션이 존재하는지 확인
     if (req.session.userID) {
         console.log('로그인됨');
-        res.render('Company_result', {'title':'기업 조회', 'current':2});
+        const driver_id = req.query.driver_id;
+        //기사를 입력한 경우
+        if (driver_id) {
+            const driver_info = DB.GetItemByDriver(driver_id);
+            console.log(result);
+            //정확한 결과가 도출된 경우
+            if(driver_info.Result=='OK'){
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info':driver_info});
+            } else{
+                //검색 결과가 존재하지 않는 경우
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info':null});    
+            }
+        } else {    //검색어 자체가 존재하지 않는 경우
+            res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info':null});
+        }
+
+        
     } else {
         console.log('로그인 안됨');
         res.render('Company_login', { 'title': '로그인', 'current': 2 });
@@ -96,16 +112,16 @@ app.get('/Company', (req, res) => {
 
 //기업 회원 로그인
 app.post('/Company/Loign', (req, res) => {
-    const userID=req.body['ID'];
-    const password=req.body['password'];
+    const userID = req.body['ID'];
+    const password = req.body['password'];
     console.log(userID);
     console.log(password);
     //로그인 성공
-    const data=DB.Login(userID, password);
-    if(data.Result=='OK'){
+    const data = DB.Login(userID, password);
+    if (data.Result == 'OK') {
         console.log(data);
-        req.session.userID=data.ID;
-        req.session.userName=data.Name;
+        req.session.userID = data.ID;
+        req.session.userName = data.Name;
         res.redirect('/Company');
     } //실패
     else {
