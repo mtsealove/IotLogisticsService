@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--송장번호 조회 페이지-->
+
 <head>
     <% include Head %>
 </head>
@@ -14,7 +15,7 @@
             <div class="div_status">
                 <p>상품명: <%=content.ItemName%></p>
                 <p>송장번호: <%=content.InvoiceNum%></p>
-                <p>상태: <%=content.Action%></p>
+                <p>상태: <%=content.Status%></p>
                 <p>출발 주소: <%=content.StAddress%></p>
                 <p>도착 주소: <%=content.DstAddress%></p>
             </div>
@@ -71,21 +72,6 @@
                     <p>배송 기사명: <%=content.DriverName%></p>
                     <p>배송 기사 연락처: <%=content.DriverPhone%></p>
             </div>
-        </div>
-
-        <!--배송 조회 다시하기 div-->
-        <div class="blur div_small_right_bottom">
-            <p>다른 택배 조회</p>
-            <form method="GET"  action="/Personal">
-                <select name="Company" class="default_input">
-                    <option value="None">택배사 선택</option>
-                    <option value="CJ">CJ 대한통운</option>
-                    <option value="Post">우체국택배</option>
-                    <option value="Logen">로젠택배</option>
-                    <option value="Hangin">한진택배</option>
-                </select>
-                <input class="default_input" type="number" name="InvoiceNum" placeholder="- 제외하고 입력">
-                <input class="go default_input" type="submit" value="go">
         </div>
     </div>
 </body>

@@ -1,4 +1,4 @@
-//입력값 학인 모듈
+//입력값 오학인 모듈
 
 //송장번호 입력 확인
 exports.IsValidInvoice = function (Company, InvoiceNum) {
