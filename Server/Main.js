@@ -5,7 +5,7 @@ const port = 3700; //서버의 포트 번호
 const DB = require('./DBConn');
 const fs = require('fs');
 const InputCheck = require('./InputCheck');
-const session = require('express-session');
+
 
 app.use(body_parser.json());
 app.use(body_parser.urlencoded({ extended: true, limit: '150mb' }));
@@ -13,15 +13,7 @@ app.set('view engine', 'ejs');
 app.set('views', 'Views');
 app.use(express.static('Src'));
 app.use(body_parser.json());
-app.use(session({   //세션 설정
-    key: 'sid',
-    secret: 'secret',
-    resave: 'false',
-    saveUninitialized: true,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 10  //로그인 유지 시간(10시간)
-    }
-}));
+
 
 //배경 이미지 라우팅
 app.get('/background', (req, res) => {
@@ -69,18 +61,20 @@ app.get('/Personal', (req, res) => {
     }
     else { //모든 것이 정상적으로 입력된 상태
         //결과 페이지 표시
-        let result = DB.GetItem(InvoiceNum);
-        if (result.Result == 'OK') {
-            let TimeLine = DB.GetTimeLine(InvoiceNum);
+        let result=DB.GetItem(InvoiceNum);
+        if(result.Result=='OK') {
+            let TimeLine=DB.GetTimeLine(InvoiceNum);
             console.log('타임라인');
             console.log(TimeLine);
-            res.render('Personal_result', { 'title': '개인 택배 조회', 'current': 1, 'content': result, 'timeline': TimeLine });
-            console.log('normal');
+            res.render('Personal_result', {'title':'개인 택배 조회', 'current':1, 'content':result, 'timeline':TimeLine});
+        console.log('normal');
         } else {
             InvoiceError(res);
         }
+        
     }
-});
+})
+
 //기업용 조회 페이지
 app.get('/Company', (req, res) => {
     console.log(req.session);
