@@ -22,7 +22,9 @@
             <!--타임라인-->
             <div class="blur div_status">
                 <p>타임라인</p>
-                <table class="timeline">
+
+                <div style="overflow: scroll; height: 350px;">
+                <table class="timelie">
                     <% for(let data of timeline) {%>
                     <tr>
                         <td class="timeline"><%=data.WorkDate.substr(5, 5).replace('-', '월 ')%>일</td>
@@ -31,6 +33,7 @@
                     </tr>
                     <% } %>
                 </table>
+                </div>
             </div>
         </div>
         <!--지도 및 배송기사 관련 정보-->

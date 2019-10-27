@@ -1,0 +1,33 @@
+<%
+    //현재 활성화된 네비바 클래스 설정
+    var classes=[];
+    for(var i=0; i<4; i++){
+        if(current==i) classes.push('nav-item active');
+        else classes.push('nav-item');
+    }
+%>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <img src="Images/AppLogo(temp).png" id="app_icon">
+  <a class="navbar-brand" href="#">Team A</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="<%=classes[0]%>">
+        <a class="nav-link" href="/Main">서비스 소개
+          <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="<%=classes[1]%>">
+        <a class="nav-link" href="/Personal">개인 조회</a>
+      </li>
+      <li class="<%=classes[2]%>">
+        <a class="nav-link" href="/Company">기업 조회</a>
+      </li>
+      <li class="<%=classes[3]%>">
+        <a class="nav-link" href="/Contact">연락처</a>
+      </li>
+    </ul>
+  </div>
+</nav>

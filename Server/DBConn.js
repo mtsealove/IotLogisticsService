@@ -1,43 +1,44 @@
-const fs=require('fs');
-const mysql=require('sync-mysql');
+const fs = require('fs');
+const mysql = require('sync-mysql');
 /*MySQL 연동 쿼리 분리를 위해 
 callback이 필요 없는 sync-mysql 모듈 사용 */
 
-const connection=new mysql({
+const connection = new mysql({
     host: 'localhost',
     user: 'IotAdmin',   //Iot DB관리 로컬 계정
     password: fs.readFileSync('pw.dat', 'utf-8'),   //비밀번호는 파일로 따로 관리
     database: 'IoT'
 });
 //에러 코드 지정
-const NoResult={
-    Result:'NoResult'
+const NoResult = {
+    Result: 'NoResult'
 }
-const WrongInput= {
-    Result:'WrongInput'
+const WrongInput = {
+    Result: 'WrongInput'
 }
 
 
 //화물 조회
-exports.GetItem=function(InvoiceNum) {
+exports.GetItem = function (InvoiceNum) {
     //입력 값 검증
-    if(!InvoiceNum||(InvoiceNum.length<=0||InvoiceNum.length>14)) {
+    if (!InvoiceNum || (InvoiceNum.length <= 0 || InvoiceNum.length > 14)) {
         console.log(WrongInput);
         return WrongInput;
     }
-    else { 
-        const query=`select II.*, CC.Name as CompanyName from 
-        (select I.*, D.* from (
-        select A.*, S.Action from AItem A join Status as S
-        on A.Status=S.ID
-        where A.InvoiceNum='${InvoiceNum}') I 
-        join Driver D
-        on I.Driver=D.ID) II 
-        join Courier CC
-        on II.CompanyID=CC.ID;`;
-        var result=connection.query(query)[0];
-        if(result) {    //검색 결과 반환
-            result.Result='OK';
+    else {
+        const query = `select AAA.*, CCC.Name as CompanyName from
+		(select AA.*, DD.DriverName, DD.DriverPhone from
+       ( select A.*, S.action from 
+        aitem A join Status S
+        on A.Status=S.ID) AA
+        join Driver DD
+        on AA.Driver=DD.ID) AAA
+        join Courier CCC
+        on AAA.companyId=CCC.ID
+        where InvoiceNum='${InvoiceNum}';`
+        var result = connection.query(query)[0];
+        if (result) {    //검색 결과 반환
+            result.Result = 'OK';
             console.log(result);
             return result;
         } else {    //검색 결과 없음
@@ -48,19 +49,18 @@ exports.GetItem=function(InvoiceNum) {
 }
 
 //타임라인 조회
-exports.GetTimeLine=function(InvoiceNum){
-    if(!InvoiceNum||(InvoiceNum.length<=0||InvoiceNum.length>14)) {
+exports.GetTimeLine = function (InvoiceNum) {
+    if (!InvoiceNum || (InvoiceNum.length <= 0 || InvoiceNum.length > 14)) {
         console.log(WrongInput);
         return WrongInput;
     } else {
-        const query=`select * from timeline
+        const query = `select * from timeline
         where InvoiceNum='${InvoiceNum}'
         order by WorkDate asc, WorkTime asc;`
-        var result=connection.query(query);
+        var result = connection.query(query);
         console.log(result);
         return result;
     }
-<<<<<<< HEAD
 }
 
 //기업 로그인
@@ -216,7 +216,20 @@ exports.GetDone = function (driver_id, status) {
 
     if (cnt1 == cnt2) return reusltOk;
     else return resultErr;
-}       
-=======
 }
->>>>>>> 8cd9d565ba4e678ad9a9e16e14403f69c966c09e
+
+exports.SetTimeLine = function (invoice, location, workdate, worktime, workid) {
+    //일치하는 상태정보 먼저 검색
+    const statusQuery = `select Action from status where id=${workid}`;
+    const status = connection.query(statusQuery)[0].Action;
+
+    //상태 업데이트
+    const query=`insert into Timeline values('${invoice}', '${location}', '${workdate}', '${worktime}', '${status}')`;
+    try{
+        connection.query(query);
+        return reusltOk;
+    } catch(err) {
+        console.error(err);
+        return resultErr;
+    } 
+}

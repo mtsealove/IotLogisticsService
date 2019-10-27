@@ -1,10 +1,12 @@
 const express = require('express');   //서버 라우팅 모듈
 const app = express();
+const session = require('express-session');
 const body_parser = require('body-parser');   //HTTP 통신을 통해 데이터를 받아 파싱하는 모듈
 const port = 3700; //서버의 포트 번호
 const DB = require('./DBConn');
 const fs = require('fs');
 const InputCheck = require('./InputCheck');
+const Android=require('./Android');
 
 
 app.use(body_parser.json());
@@ -13,6 +15,15 @@ app.set('view engine', 'ejs');
 app.set('views', 'Views');
 app.use(express.static('Src'));
 app.use(body_parser.json());
+app.use(session({
+    key: 'sid',
+    secret: 'secret',
+    resave: 'false',
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 10  //로그인 유지 시간(10시간)
+    }
+}));
 
 
 //배경 이미지 라우팅
@@ -36,7 +47,9 @@ app.get('/Get/ItemStatus', (req, res) => {
 
 //웹 메인 페이지 출력
 app.get('/Main', (req, res) => {
-    res.render('Main', { 'title': '물류추적 서비스', 'current': 0, 'personal_div': 'div_left' });
+    //로그인 되었는지 확인
+    const userID=req.session.userID;
+    res.render('Main', { 'title': '물류추적 서비스', 'current': 0, 'personal_div': 'div_left', 'userID':userID });
 });
 
 //기본 페이지 리다이렉트
@@ -47,31 +60,26 @@ app.get('/', (req, res) => {
 //개인 조회 페이지
 app.get('/Personal', (req, res) => {
     const InvoiceNum = req.query.InvoiceNum;
-    const Company = req.query.Company;
     console.log(InvoiceNum);
-    console.log(Company);
 
     //아무것도 입력하지 않은 상태
-    if ((!InvoiceNum) || (!Company)) {
+    if ((!InvoiceNum)) {
         //기본 페이지 표시
         res.render('Personal_default', { 'title': '개인 택배 조회', 'current': 1, 'personal_div': 'div_center' });
         console.log('no input');
-    } else if (!InputCheck.IsValidInvoice(Company, InvoiceNum)) { //정상적인 송장번호가 아닌 경우
-        InvoiceError(res);
-    }
-    else { //모든 것이 정상적으로 입력된 상태
+    } else { //모든 것이 정상적으로 입력된 상태
         //결과 페이지 표시
-        let result=DB.GetItem(InvoiceNum);
-        if(result.Result=='OK') {
-            let TimeLine=DB.GetTimeLine(InvoiceNum);
+        let result = DB.GetItem(InvoiceNum);
+        if (result.Result == 'OK') {
+            let TimeLine = DB.GetTimeLine(InvoiceNum);
             console.log('타임라인');
             console.log(TimeLine);
-            res.render('Personal_result', {'title':'개인 택배 조회', 'current':1, 'content':result, 'timeline':TimeLine});
-        console.log('normal');
+            console.log(result);
+            res.render('Personal_result', { 'title': '개인 택배 조회', 'current': 1, 'content': result, 'timeline': TimeLine });
+            console.log('normal');
         } else {
             InvoiceError(res);
         }
-        
     }
 })
 
@@ -87,17 +95,17 @@ app.get('/Company', (req, res) => {
             const driver_info = DB.GetItemByDriver(driver_id);
             console.log(result);
             //정확한 결과가 도출된 경우
-            if(driver_info.Result=='OK'){
-                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info':driver_info});
-            } else{
+            if (driver_info.Result == 'OK') {
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': driver_info });
+            } else {
                 //검색 결과가 존재하지 않는 경우
-                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info':null});    
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null });
             }
         } else {    //검색어 자체가 존재하지 않는 경우
-            res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info':null});
+            res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null });
         }
 
-        
+
     } else {
         console.log('로그인 안됨');
         res.render('Company_login', { 'title': '로그인', 'current': 2 });
@@ -105,7 +113,7 @@ app.get('/Company', (req, res) => {
 });
 
 //기업 회원 로그인
-app.post('/Company/Loign', (req, res) => {
+app.post('/Company/Login', (req, res) => {
     const userID = req.body['ID'];
     const password = req.body['password'];
     console.log(userID);
@@ -123,6 +131,11 @@ app.post('/Company/Loign', (req, res) => {
     }
 });
 
+//연락처 페이지
+app.get('/Contact', (req, res)=>{
+   res.render('Contact', {'title':'연락처', 'current':3}); 
+});
+
 //송장번호 오류 페이지 출력
 function InvoiceError(res) {
     res.render('InvoiceError', { 'title': '오류', 'current': 1 });
@@ -132,4 +145,5 @@ function InvoiceError(res) {
 app.listen(port, function () {    //서버 실행
     const ip = require('ip');
     console.log('Servers Runnings on ' + ip.address() + ': ' + port);
+    Android.start();
 });
