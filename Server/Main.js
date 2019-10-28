@@ -85,7 +85,7 @@ app.get('/Personal', (req, res) => {
 
 //기업용 조회 페이지
 app.get('/Company', (req, res) => {
-    console.log(req.session);
+    //console.log(req.session);
     //세션이 존재하는지 확인
     if (req.session.userID) {
         console.log('로그인됨');
@@ -96,15 +96,18 @@ app.get('/Company', (req, res) => {
             const driver_info = DB.GetItemByDriver(driver_id);
             const driver_list=DB.GetDriverList(req.session.userID);
             console.log(driver_info);
+            console.log('driver_list');
+            console.log(driver_list);
             //정확한 결과가 도출된 경우
             if (driver_info.Result == 'OK') {
                 res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': driver_info.data, 'All':driver_info.All, 'Done':driver_info.Done , 'driver_list':driver_list});
             } else {
                 //검색 결과가 존재하지 않는 경우
-                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null, 'driver_list':null });
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_infoffff': null, 'driver_list':driver_list });
             }
         } else {    //검색어 자체가 존재하지 않는 경우
-            res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null });
+            const driver_list=DB.GetDriverList(req.session.userID);
+            res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null, 'driver_list':driver_list });
         }
 
 
@@ -118,8 +121,8 @@ app.get('/Company', (req, res) => {
 app.post('/Company/Login', (req, res) => {
     const userID = req.body['ID'];
     const password = req.body['password'];
-    console.log(userID);
-    console.log(password);
+    //console.log(userID);
+    //console.log(password);
     //로그인 성공
     const data = DB.Login(userID, password);
     if (data.Result == 'OK') {
