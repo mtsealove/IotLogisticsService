@@ -6,7 +6,7 @@ const port = 3700; //서버의 포트 번호
 const DB = require('./DBConn');
 const fs = require('fs');
 const InputCheck = require('./InputCheck');
-const Android=require('./Android');
+const Android = require('./Android');
 
 
 app.use(body_parser.json());
@@ -48,8 +48,8 @@ app.get('/Get/ItemStatus', (req, res) => {
 //웹 메인 페이지 출력
 app.get('/Main', (req, res) => {
     //로그인 되었는지 확인
-    const userID=req.session.userID;
-    res.render('Main', { 'title': '물류추적 서비스', 'current': 0, 'personal_div': 'div_left', 'userID':userID });
+    const userID = req.session.userID;
+    res.render('Main', { 'title': '물류추적 서비스', 'current': 0, 'personal_div': 'div_left', 'userID': userID });
 });
 
 //기본 페이지 리다이렉트
@@ -94,22 +94,21 @@ app.get('/Company', (req, res) => {
         //기사를 입력한 경우
         if (driver_id) {
             const driver_info = DB.GetItemByDriver(driver_id);
-            const driver_list=DB.GetDriverList(req.session.userID);
+            const driver_list = DB.GetDriverList(req.session.userID);
             console.log(driver_info);
             console.log('driver_list');
             console.log(driver_list);
             //정확한 결과가 도출된 경우
             if (driver_info.Result == 'OK') {
-                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': driver_info.data, 'All':driver_info.All, 'Done':driver_info.Done , 'driver_list':driver_list});
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': driver_info.data, 'All': driver_info.All, 'Done': driver_info.Done, 'driver_list': driver_list });
             } else {
                 //검색 결과가 존재하지 않는 경우
-                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_infoffff': null, 'driver_list':driver_list });
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_infoffff': null, 'driver_list': driver_list });
             }
         } else {    //검색어 자체가 존재하지 않는 경우
-            const driver_list=DB.GetDriverList(req.session.userID);
-            res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null, 'driver_list':driver_list });
+            const driver_list = DB.GetDriverList(req.session.userID);
+            res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null, 'driver_list': driver_list });
         }
-
 
     } else {
         console.log('로그인 안됨');
@@ -137,8 +136,8 @@ app.post('/Company/Login', (req, res) => {
 });
 
 //연락처 페이지
-app.get('/Contact', (req, res)=>{
-   res.render('Contact', {'title':'연락처', 'current':3}); 
+app.get('/Contact', (req, res) => {
+    res.render('Contact', { 'title': '연락처', 'current': 3 });
 });
 
 //송장번호 오류 페이지 출력

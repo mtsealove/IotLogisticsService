@@ -20,10 +20,10 @@
       } %>
 
       //기사 클릭 시 해당 기사 조회 페이지로 이동
-      <% if(driver_list) {
-        for(var i=0; i<driver_list.length; i++) { %>
-          $('#driver'+<%=i%>).click(function() {
-         location.href='/Company?driver_id=<%=driver_list[i].ID%>';
+      <% if (driver_list) {
+        for (var i = 0; i < driver_list.length; i++) { %>
+          $('#driver' +<%=i %>).click(function () {
+            location.href = '/Company?driver_id=<%=driver_list[i].ID%>';
           });
       <%  }
       }%>
@@ -32,6 +32,10 @@
       $('#show_driver_btn').click(function () {
         $('#layerPopup').show();
       });
+
+      $('#closePopupBtn').click(function() {
+        $('#layerPopup').hide();
+      })
     });
 
     function checkInput() {
@@ -84,87 +88,107 @@
 
 <body class="body">
   <%include Banner %>
-  <!--1 대형 배경-->
-  <div class="div_big blur">
-    <!--2 기사정보 검색-->
-    <div class="div_middle_left blur">
-      <h3>기사 정보 조회</h3>
-      <form method="GET" action="/Company" id="company_form">
-        <input type="text" placeholder="기사 ID 입력" name="driver_id" id="search_input">
-        <button type="button" id="search_btn">GO!</button>
-      </form>
+  <!--왼쪽 div-->
+  <div class="float-left left_div">
+  <!--2 기사정보 검색-->
+  <div class="card">
+    <div class="card-body">
+    <h4 class="card-title">기사 정보 조회</h4>
+    <form class="form-inline" method="GET" action="/Company" id="company_form">
+      <input class="form-control" type="text" placeholder="기사 ID 입력" name="driver_id" id="search_input">
+      <button class="btn btn-primary" type="button" id="search_btn">GO!</button>
+    </form>
+  </div>
+  </div>
+  <!--2 기사 정보-->
+  <div class="card" style="margin-top: 30px;">
+    <!--검색한 기사가 있을 때만 출력-->
+    <dv class="card-body">
+    <% if(driver_info) { %>
+    <h4 class="card-title">기사 정보</h4>
+    <p>배송 기사명: <%=driver_info[0].DriverName%></p>
+    <p>배송 기사 연락처: <%=driver_info[0].DriverPhone%></p>
+    <!--3 운송정보-->
+    <div>
+      <h4 class="card-title">운송정보</h4>
+      <p><%=All%>개 중 <%=Done%>개 남음</p>
     </div>
-    <!--2 기사 정보-->
-    <div class="div_left blur">
-      <!--검색한 기사가 있을 때만 출력-->
-      <% if(driver_info) { %>
-      <h3>기사 정보</h3>
-      <p>배송 기사명: <%=driver_info[0].DriverName%></p>
-      <p>배송 기사 연락처: <%=driver_info[0].DriverPhone%></p>
-      <!--3 운송정보-->
-      <div>
-        <h3>운송정보</h3>
-        <p><%=All%>개 중 <%=Done%>개 남음</p>
 
-        <!--4 화물 정보 여러개 2*x 배열-->
-        <div>
-          <% for(var i=0; i<driver_info.length; i++) { %>
-          <!--카드 형태로 표현될 뷰들-->
-          <div style="background: white;" id="item<%=i%>" data-location="<%=driver_info[i].Location%>">
-            <p>상품명: <%=driver_info[i].ItemName%></p>
-            <p>송장: <%=driver_info[i].InvoiceNum%></p>
-            <p>상태: <%=driver_info[i].Action%></p>
-            <p>출발주소: <%=driver_info[i].StAddress%></p>
-            <p>도착주소: <%=driver_info[i].DstAddress%></p>
+      <!--4 화물 정보 여러개 2*x 배열-->
+      <div class="container" style="padding-bottom: 100px; margin-top: -60px;">
+        <div class="row">
+        <% for(var i=0; i<driver_info.length; i++) { %>
+        <!--카드 형태로 표현될 뷰들-->
+        <div class="col card" id="item<%=i%>" data-location="<%=driver_info[i].Location%>" style="margin-left: 10px; margin-right: 10px;">
+          <div class="card-body">
+          <label>상품명: <%=driver_info[i].ItemName%></label>
+          <label>송장: <%=driver_info[i].InvoiceNum%></label>
+          <label>상태: <%=driver_info[i].Action%></label>
+          <label>출발주소: <%=driver_info[i].StAddress%></label>
+          <label>도착주소: <%=driver_info[i].DstAddress%></label>
           </div>
-
-          <% } %>
         </div>
+        <% } if(i%2==0) {%>
+        </div>
+          <% } %>
       </div>
     </div>
-    <!--2 지도-->
-    <div class="div_middle_right_top blur">
-      <!--카카오맵-->
-      <div id="map">
-        <!--지도라 꾸밀 것 없음-->
-      </div>
-      <script>
-        setMap(null);
-      </script>
+  </div>
+  <% } %>
+  </div>
+
+  <% if(driver_info) { %>
+  <!--2 지도-->
+  <div class="card right_div float-right">
+    <div class="card-body">
+    <h4 class="card-title">위치 조회</h4>
+    <!--카카오맵-->
+    <div id="map">
+      <!--지도라 꾸밀 것 없음-->
     </div>
-    <% } %>
-    <!--2모든 기사 목록 보기-->
-    <div class="blur">
-      <button id="show_driver_btn">모든 기사 목록 보기</button>
+    <script>
+      setMap(null);
+    </script>
+  </div>
+  <% } %>
+  </div>
+  <!--2모든 기사 목록 보기-->
+  <div class="card right_div float-right" style="margin-top: 30px;">
+    <div class="card-body">
+        <button class="btn btn-primary btn-block" id="show_driver_btn">모든 기사 목록 보기</button>
     </div>
-    <!--기사 선택 팝업-->
-    <div id="layerPopup"
-      style="background: white; width: 300px; height: 300px; z-index: 5; position:absolute; top: 50%; left: 50%; margin-left: -150px; margin-top: -150px;">
-      <h3>기사 목록</h3>
-      <div style="overflow: scroll; height: 200px;">
-        <!--기사 테이블-->
-        <% try { %>
-        <table>
-          <thead>
-            <th>이름</th>
-            <th>연락처</th>
-            <th>상태</th>
-          </thead>
-          <tbody>
-            <% for (var i=0; i<driver_list.length; i++) { %>
-              <tr id="driver<%=i%>">
-                <td><%=driver_list[i].DriverName%></td>
-                <td><%=driver_list[i].DriverPhone%></td>
-                <td><%=driver_list[i].Action%></td>
-              </tr>
-            <% } %>
-          </tbody>
-        </table>
-        <% } catch(err){
+    
+  </div>
+  <!--기사 선택 팝업-->
+  <div id="layerPopup" class="card"
+    style="background: white; width: 400px; z-index: 5; position:absolute; top: 50%; left: 50%; margin-left: -150px; margin-top: -150px;">
+    <div class="card-body">
+    <h3 class="card-title">기사 목록</h3>
+    <div style="overflow: scroll; height: 200px;">
+      <!--기사 테이블-->
+      <% try { %>
+      <table class="table">
+        <thead class="thead-dark">
+          <th>이름</th>
+          <th>연락처</th>
+          <th>상태</th>
+        </thead>
+        <tbody>
+          <% for (var i=0; i<driver_list.length; i++) { %>
+          <tr id="driver<%=i%>">
+            <td><%=driver_list[i].DriverName%></td>
+            <td><%=driver_list[i].DriverPhone%></td>
+            <td><%=driver_list[i].Action%></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+      <% } catch(err){
 
         } %>
-      </div>
+        
     </div>
-
+    <button id="closePopupBtn" class="btn btn-block btn-secondary">닫기</button>
+</div>
   </div>
 </body>
