@@ -83,26 +83,58 @@ exports.Login = function (ID, password) {
 
 //기사별 화물 목록 조회
 exports.GetItemByDriver = function (driver_id, sort) {
-    const statusQuery = `select status from driver where id='${driver_id}'`;
-    const Status = connection.query(statusQuery)[0].status;
+    //기사 상태 조회 
+    try {
+        const statusQuery = `select Status from Driver where ID ='${driver_id}'`;
+        const Status = (connection.query(statusQuery)[0]).Status;
+        console.log(Status);
 
-    if (driver_id) {
-        //배송이 완료되지 않은 화물만 출력
-        var query = `select * from AItem a join  Status s on a.status=s.ID where Driver='${driver_id}' and status!=6`;
-        if (sort) query += ` order by ${sort}`;
-        var result = {};
-        const data = connection.query(query);
-        if (data) {
-            result.Status = Status;
-            result.Result = 'OK';
-            result.data = data;
-            return result;
+        if (driver_id) {
+            //배송이 완료되지 않은 화물만 출력
+            var query = `select AA.*, DD.DriverName, DD.DriverPhone from
+        (select a.*, S.Action
+        from AItem a join  Status s on a.status=s.ID
+        where Driver = '${driver_id}' 
+        and status!=6) AA
+        join Driver DD on AA.driver=DD.ID`;
+
+            if (sort) query += ` order by ${sort}`;
+            var result = {};
+            const data = connection.query(query);
+            console.log(data);
+
+            //완료된 것들
+            const driver_status = connection.query(`select status from Driver where ID='${driver_id}'`)[0].status;
+            const done = connection.query(`select count(*) as cnt from Aitem where Driver='${driver_id}' and Status=${driver_status}`)[0].cnt;
+            const all = connection.query(`select count(*) as cnt from aitem where driver='${driver_id}' and status!=6`)[0].cnt;
+
+            if (data) {
+                result.Status = Status;
+                result.Result = 'OK';
+                result.Done = done;
+                result.All = all;
+                result.data = data;
+                return result;
+            } else {
+                return NoResult;
+            }
         } else {
-            return NoResult;
+            return WrongInput;
         }
-    } else {
-        return WrongInput;
+    } catch (err) {
+        console.error(err);
+        return NoResult;
     }
+}
+
+//회사별 기사 목록 조회
+exports.GetDriverList=function(userID) {
+    const query=`select D.ID, D.DriverName, D.DriverPhone, S.Action from driver D
+    join Status S
+    on D.Status=S.ID
+    where D.CourierID='${userID}'`;
+    const result=connection.query(query);
+    return result;
 }
 //기사 정보 출력
 exports.GetDriver = function (driver_id) {
@@ -224,12 +256,12 @@ exports.SetTimeLine = function (invoice, location, workdate, worktime, workid) {
     const status = connection.query(statusQuery)[0].Action;
 
     //상태 업데이트
-    const query=`insert into Timeline values('${invoice}', '${location}', '${workdate}', '${worktime}', '${status}')`;
-    try{
+    const query = `insert into Timeline values('${invoice}', '${location}', '${workdate}', '${worktime}', '${status}')`;
+    try {
         connection.query(query);
         return reusltOk;
-    } catch(err) {
+    } catch (err) {
         console.error(err);
         return resultErr;
-    } 
+    }
 }

@@ -90,16 +90,18 @@ app.get('/Company', (req, res) => {
     if (req.session.userID) {
         console.log('로그인됨');
         const driver_id = req.query.driver_id;
+        console.log(driver_id);
         //기사를 입력한 경우
         if (driver_id) {
             const driver_info = DB.GetItemByDriver(driver_id);
-            console.log(result);
+            const driver_list=DB.GetDriverList(req.session.userID);
+            console.log(driver_info);
             //정확한 결과가 도출된 경우
             if (driver_info.Result == 'OK') {
-                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': driver_info });
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': driver_info.data, 'All':driver_info.All, 'Done':driver_info.Done , 'driver_list':driver_list});
             } else {
                 //검색 결과가 존재하지 않는 경우
-                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null });
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null, 'driver_list':null });
             }
         } else {    //검색어 자체가 존재하지 않는 경우
             res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null });
