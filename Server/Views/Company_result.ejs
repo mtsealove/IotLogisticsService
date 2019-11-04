@@ -57,9 +57,12 @@
       var map = new kakao.maps.Map(container, options);
       var geocoder = new kakao.maps.services.Geocoder();
       var address;
-      <% if (driver_info) { %>
+      <% if (driver_info) { 
+        try{ %>
         address= '<%=driver_info[0].Location%>';
-      <% } %>
+      <% }catch(err){
+
+      }} %>
       
       if (location)
         address = location;
@@ -104,7 +107,7 @@
   <div class="card" style="margin-top: 30px;">
     <!--검색한 기사가 있을 때만 출력-->
     <dv class="card-body">
-    <% if(driver_info) { %>
+    <% if(driver_info) { try{ %>
     <h4 class="card-title">기사 정보</h4>
     <p>배송 기사명: <%=driver_info[0].DriverName%></p>
     <p>배송 기사 연락처: <%=driver_info[0].DriverPhone%></p>
@@ -116,25 +119,32 @@
 
       <!--4 화물 정보 여러개 2*x 배열-->
       <div class="container" style="padding-bottom: 100px; margin-top: -60px;">
-        <div class="row">
         <% for(var i=0; i<driver_info.length; i++) { %>
+
+          <% if(i%2==0) {%>
+            <div class="row">
+          <% } %>
         <!--카드 형태로 표현될 뷰들-->
-        <div class="col card" id="item<%=i%>" data-location="<%=driver_info[i].Location%>" style="margin-left: 10px; margin-right: 10px;">
-          <div class="card-body">
-          <label>상품명: <%=driver_info[i].ItemName%></label>
-          <label>송장: <%=driver_info[i].InvoiceNum%></label>
-          <label>상태: <%=driver_info[i].Action%></label>
-          <label>출발주소: <%=driver_info[i].StAddress%></label>
-          <label>도착주소: <%=driver_info[i].DstAddress%></label>
+        <div class="col col-5 card" id="item<%=i%>" data-location="<%=driver_info[i].Location%>" style="margin-left: 10px; margin-right: 10px; margin-top: 10px;">
+          <div class="card-body" >
+          <label>상품명: <%=driver_info[i].ItemName%></label><br>
+          <label>송장: <%=driver_info[i].InvoiceNum%></label><br>
+          <label>상태: <%=driver_info[i].Action%></label><br>
+          <label>출발주소: <%=driver_info[i].StAddress%></label><br>
+          <label>도착주소: <%=driver_info[i].DstAddress%></label><br>
           </div>
         </div>
-        <% } if(i%2==0) {%>
-        </div>
+
+        <% if(i!=0&&(i%2==1||i==driver_info.length)) { %>
+            </div>
+        <% }%>
+    
           <% } %>
       </div>
     </div>
   </div>
-  <% } %>
+  <% } catch(err){
+  }}%>
   </div>
 
   <% if(driver_info) { %>

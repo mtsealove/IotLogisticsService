@@ -7,14 +7,13 @@ const DB = require('./DBConn');
 const fs = require('fs');
 const InputCheck = require('./InputCheck');
 const Android = require('./Android');
+const chalk=require('chalk');
 
-
-app.use(body_parser.json());
 app.use(body_parser.urlencoded({ extended: true, limit: '150mb' }));
-app.set('view engine', 'ejs');
-app.set('views', 'Views');
-app.use(express.static('Src'));
-app.use(body_parser.json());
+app.set('view engine', 'ejs');  //뷰 엔진 설정
+app.set('views', 'Views');  //ejs 폴더 지정
+app.use(express.static('Src')); //정적 파일 서비스
+app.use(body_parser.json());    //json 파싱
 app.use(session({
     key: 'sid',
     secret: 'secret',
@@ -24,19 +23,6 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 10  //로그인 유지 시간(10시간)
     }
 }));
-
-
-//배경 이미지 라우팅
-app.get('/background', (req, res) => {
-    fs.readFile('./Src/web_background.png', (err, data) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(data);
-    });
-});
 
 //송장번호를 입력, 화물의 상태 반환
 app.get('/Get/ItemStatus', (req, res) => {
@@ -60,24 +46,20 @@ app.get('/', (req, res) => {
 //개인 조회 페이지
 app.get('/Personal', (req, res) => {
     const InvoiceNum = req.query.InvoiceNum;
-    console.log(InvoiceNum);
 
     //아무것도 입력하지 않은 상태
     if ((!InvoiceNum)) {
         //기본 페이지 표시
         res.render('Personal_default', { 'title': '개인 택배 조회', 'current': 1, 'personal_div': 'div_center' });
-        console.log('no input');
+        console.log(chalk.red('no input'));
     } else { //모든 것이 정상적으로 입력된 상태
         //결과 페이지 표시
         let result = DB.GetItem(InvoiceNum);
         if (result.Result == 'OK') {
             let TimeLine = DB.GetTimeLine(InvoiceNum);
-            console.log('타임라인');
-            console.log(TimeLine);
-            console.log(result);
+            console.log('Inquire TimeLine: '+chalk.green(InvoiceNum));
             res.render('Personal_result', { 'title': '개인 택배 조회', 'current': 1, 'content': result, 'timeline': TimeLine });
-            console.log('normal');
-        } else {
+        } else {    //송장번호 오류 페이지 출력
             InvoiceError(res);
         }
     }
@@ -88,22 +70,22 @@ app.get('/Company', (req, res) => {
     //console.log(req.session);
     //세션이 존재하는지 확인
     if (req.session.userID) {
-        console.log('로그인됨');
+        console.log('User: '+chalk.bgGreen(req.session.userID));
         const driver_id = req.query.driver_id;
-        console.log(driver_id);
         //기사를 입력한 경우
         if (driver_id) {
             const driver_info = DB.GetItemByDriver(driver_id);
             const driver_list = DB.GetDriverList(req.session.userID);
-            console.log(driver_info);
-            console.log('driver_list');
-            console.log(driver_list);
+            console.log('DriverID: '+chalk.bgGreen(driver_id));
+
             //정확한 결과가 도출된 경우
             if (driver_info.Result == 'OK') {
                 res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': driver_info.data, 'All': driver_info.All, 'Done': driver_info.Done, 'driver_list': driver_list });
             } else {
                 //검색 결과가 존재하지 않는 경우
-                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_infoffff': null, 'driver_list': driver_list });
+                const driver_list = DB.GetDriverList(req.session.userID);
+                res.render('Company_result', { 'title': '기업 조회', 'current': 2, 'driver_info': null, 'driver_list': driver_list });
+
             }
         } else {    //검색어 자체가 존재하지 않는 경우
             const driver_list = DB.GetDriverList(req.session.userID);
@@ -111,7 +93,7 @@ app.get('/Company', (req, res) => {
         }
 
     } else {
-        console.log('로그인 안됨');
+        console.log('Not Logined');
         res.render('Company_login', { 'title': '로그인', 'current': 2 });
     }
 });
@@ -125,12 +107,15 @@ app.post('/Company/Login', (req, res) => {
     //로그인 성공
     const data = DB.Login(userID, password);
     if (data.Result == 'OK') {
-        console.log(data);
         req.session.userID = data.ID;
         req.session.userName = data.Name;
+
+        console.log(chalk.green('User Logined'));
+        console.log('ID: '+chalk.bgGreen(req.session.userID)+' Name: '+chalk.bgGreen(req.session.userName));
         res.redirect('/Company');
     } //실패
     else {
+        console.log(chalk.red('Login failed'));
         res.send('<script>alert("ID와 비밀번호를 확인하세요");history.go(-1)</script>');
     }
 });
@@ -143,11 +128,11 @@ app.get('/Contact', (req, res) => {
 //송장번호 오류 페이지 출력
 function InvoiceError(res) {
     res.render('InvoiceError', { 'title': '오류', 'current': 1 });
-    console.log('송장번호 오류 발생');
+    console.log(chalk.red('Incorrect Invoice Number Inputed'));
 }
 
-app.listen(port, function () {    //서버 실행
+app.listen(port, function (req, res) {    //서버 실행
     const ip = require('ip');
-    console.log('Servers Runnings on ' + ip.address() + ': ' + port);
+    console.log(chalk.yellow('Main Servers Runnings on ' + ip.address() + ': ' + port));
     Android.start();
 });

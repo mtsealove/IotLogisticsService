@@ -39,7 +39,6 @@ exports.GetItem = function (InvoiceNum) {
         var result = connection.query(query)[0];
         if (result) {    //검색 결과 반환
             result.Result = 'OK';
-            console.log(result);
             return result;
         } else {    //검색 결과 없음
             console.log(NoResult);
@@ -51,14 +50,13 @@ exports.GetItem = function (InvoiceNum) {
 //타임라인 조회
 exports.GetTimeLine = function (InvoiceNum) {
     if (!InvoiceNum || (InvoiceNum.length <= 0 || InvoiceNum.length > 14)) {
-        console.log(WrongInput);
+        console.log('Incorrect Invoice Number');
         return WrongInput;
     } else {
         const query = `select * from timeline
         where InvoiceNum='${InvoiceNum}'
         order by WorkDate asc, WorkTime asc;`
         var result = connection.query(query);
-        console.log(result);
         return result;
     }
 }
@@ -87,7 +85,6 @@ exports.GetItemByDriver = function (driver_id, sort) {
     try {
         const statusQuery = `select Status from Driver where ID ='${driver_id}'`;
         const Status = (connection.query(statusQuery)[0]).Status;
-        console.log(Status);
 
         if (driver_id) {
             //배송이 완료되지 않은 화물만 출력
@@ -101,7 +98,6 @@ exports.GetItemByDriver = function (driver_id, sort) {
             if (sort) query += ` order by ${sort}`;
             var result = {};
             const data = connection.query(query);
-            console.log(data);
 
             //완료된 것들
             const driver_status = connection.query(`select status from Driver where ID='${driver_id}'`)[0].status;
@@ -237,14 +233,12 @@ exports.GetDone = function (driver_id, status) {
     and driver='${driver_id}'`;
 
     const cnt1 = connection.query(query1)[0].cnt;
-    console.log(cnt1);
-
+    
     //모든 상태 확인
     const query2 = `select count(*) as cnt from aitem
     where status!=6
     and driver='${driver_id}'`;
     const cnt2 = connection.query(query2)[0].cnt;
-    console.log(cnt2);
 
     if (cnt1 == cnt2) return reusltOk;
     else return resultErr;
