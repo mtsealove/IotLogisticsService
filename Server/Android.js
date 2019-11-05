@@ -98,7 +98,7 @@ exports.start = function () {
         const WorkTime = body['WorkTime'];
         const WorkId = body['WorkId'];
 
-        console.log(chalk.bgCyan('Android:')+' Update Timeline: '+chak.bgGreen(invoice));
+        console.log(chalk.bgCyan('Android:')+' Update Timeline: '+chalk.bgGreen(invoice));
 
         const result = db.SetTimeLine(invoice, Location, WorkDate, WorkTime, WorkId);
         res.json(result);
